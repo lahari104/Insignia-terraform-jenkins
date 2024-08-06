@@ -1,0 +1,30 @@
+pipeline{
+    agent{
+        label 'Lahari'
+    }
+    triggers{
+        pollSCM('* * * * *')
+    }
+    stages{
+        stage('Clone'){
+            steps{
+                git url: 'https://github.com/lahari104/insignia-terraform-jenkins.git',
+                    branch: 'main'
+            }
+        }
+        stage('terraform-execution'){
+            steps{
+                script{
+                    sh """
+                        cd terraform-jenkins/
+                        terraform init
+                        terraform fmt
+                        terraform validate
+                        terraform plan
+                        terraform apply -auto-approve
+                    """
+                }
+            }
+        }
+    }
+}
