@@ -1,15 +1,27 @@
-pipeline{
-    agent{
+pipeline {
+    agent {
         label 'Lahari'
     }
-    triggers{
+    triggers {
         pollSCM('* * * * *')
     }
-    stages{
-        stage('terraform-execution'){
-            steps{
-                script{
-                    sh """
+    environment {
+        AWS_DEFAULT_REGION = 'us-east-1'
+    }
+    stages {
+        stage('AWS Credentials') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]) {
+                    script {
+                        sh 'aws s3 ls'
+                    }
+                }
+            }
+        }
+        stage('terraform-execution') {
+            steps {
+                script {
+                    sh '''
                         cd terraform-jenkins/
                         terraform init
                         terraform fmt
@@ -17,7 +29,7 @@ pipeline{
                         terraform plan
                         terraform apply -auto-approve
                         terraform destroy -auto-approve
-                    """
+                    '''
                 }
             }
         }
