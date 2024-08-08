@@ -1,15 +1,3 @@
-terraform {
-  backend "s3" {
-    bucket         = "terraform-insignia-statefile"
-    dynamodb_table = "insignia-statefile-locking"
-    key            = "ec2-insignia/terraform.tfstate"
-    region         = "us-east-1"
-  }
-}
-
-
-
-
 resource "aws_vpc" "tf_vpc" {
   cidr_block = "192.168.0.0/16"
   tags = {
